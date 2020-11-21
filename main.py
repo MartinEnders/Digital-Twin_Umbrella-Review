@@ -129,11 +129,11 @@ def plot_lr_tree(stop_depth=None,renderer=['dot','circo','sfdp', 'neato', 'twopi
 st.title("Umbrella Review of Digital Twin Literature Reviews")
 depth = st.sidebar.slider("Depth",min_value=0,max_value=10,value=6, step=1)
 
-stop_depth = st.sidebar.checkbox("Show Sources")
+sources = st.sidebar.checkbox("Show Sources")
 
 options = ['Show All'] + [k for k,v in get_review_dict()['Digital Twin Umbrella Review'].items()]
 branches = st.sidebar.multiselect("Branches", options,default=options[2:4])
 
 #st.write(branches)
 
-st.graphviz_chart(plot_lr_tree(None, 'dot',stop_depth,branches))
+st.graphviz_chart(plot_lr_tree(depth, 'dot',sources,branches))
