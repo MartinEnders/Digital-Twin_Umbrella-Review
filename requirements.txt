@@ -2,5 +2,5 @@ networkx==2.4
 Markdown==2.6.9
 streamlit==0.71.0
 graphviz==0.8.1
-pygraphviz
+pydot
 beautifulsoup4==4.9.3

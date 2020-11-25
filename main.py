@@ -6,7 +6,8 @@ from pprint import pprint
 from bs4 import BeautifulSoup
 
 import networkx as nx
-#import graphviz
+from networkx.drawing.nx_pydot import write_dot
+import io
 
 import collections
 import textwrap
@@ -61,7 +62,7 @@ def iterdict(d, G, depth=0, pos=0, parent=0, stop_depth=None, show_sources=True,
             #ref_string = "<br align='left'/>".join(textwrap.wrap(ref_string))
             references_html = f"<font point-size='8'>{ref_string}</font><br align='left'/>"
         elif references and not show_sources:
-            references_html = f"<font point-size='8'>[Count: {len(references)}]</font><br align='left'/>"
+            references_html = f"<font point-size='7'>[Count: {len(references)}]</font><br align='left'/>"
         else:
             references_html = ""
         
@@ -109,20 +110,15 @@ def plot_lr_tree(stop_depth=None,renderer=['dot','circo','sfdp', 'neato', 'twopi
 
 
     G.graph['graph'] = {'rankdir':'LR','nodesep':0.2, 'ranksep':0.2, 'overlap':'false'}
-    G.graph['node'] = {'shape':'box',  'fontsize':11, 'margin':0.03, 'width':0, 'height':0}
+    G.graph['node'] = {'shape':'box',  'fontsize':11, 'margin':0.03, 'width':0, 'height':0, 'fontname': "DejaVu Sans"}
 
-    A=nx.nx_agraph.to_agraph(G)
-    # see the dot language code
-    #print(str(A)[:300])
-    # set program for layout
-    # A.layout('dot')
+    #A=nx.nx_agraph.to_agraph(G)
+    #return A.to_string()
 
-    # draw it in the notebook
-    #graph = graphviz.Source(A.to_string())
-    #graph.engine = renderer
-    #graph.format = 'svg'
-    #graph.render()
-    return A.to_string()
+    f = io.StringIO()
+    write_dot(G,f)
+    f.seek(0)
+    return f.read()
 
 
 
