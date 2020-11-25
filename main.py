@@ -6,7 +6,7 @@ from pprint import pprint
 from bs4 import BeautifulSoup
 
 import networkx as nx
-import graphviz
+#import graphviz
 
 import collections
 import textwrap
@@ -115,7 +115,7 @@ def plot_lr_tree(stop_depth=None,renderer=['dot','circo','sfdp', 'neato', 'twopi
     # see the dot language code
     #print(str(A)[:300])
     # set program for layout
-    A.layout('dot')
+    # A.layout('dot')
 
     # draw it in the notebook
     #graph = graphviz.Source(A.to_string())
