@@ -130,6 +130,8 @@ sources = st.sidebar.checkbox("Show Sources")
 options = ['Show All'] + [k for k,v in get_review_dict()['Digital Twin Umbrella Review'].items()]
 branches = st.sidebar.multiselect("Branches", options,default=options[1:5])
 
+st.sidebar.markdown("[Sourcecode at Github](https://github.com/MartinEnders/Digital-Twin_Umbrella-Review)")
+
 #st.write(branches)
 
 st.graphviz_chart(plot_lr_tree(depth, 'dot',sources,branches))
