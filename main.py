@@ -128,7 +128,7 @@ depth = st.sidebar.slider("Depth",min_value=0,max_value=10,value=6, step=1)
 sources = st.sidebar.checkbox("Show Sources")
 
 options = ['Show All'] + [k for k,v in get_review_dict()['Digital Twin Umbrella Review'].items()]
-branches = st.sidebar.multiselect("Branches", options,default=options[2:5])
+branches = st.sidebar.multiselect("Branches", options,default=options[1:5])
 
 #st.write(branches)
 
