@@ -43,7 +43,7 @@ def get_review_dict():
 
 
 
-def iterdict(d, G, depth=0, pos=0, parent=0, stop_depth=None, show_sources=True, show_selected_branch=None):
+def iterdict(d, G, depth=0, pos=0, parent=0, stop_depth=None, show_sources=True, show_selected_branch=None,year_range=[2000,2100]):
     for i, (k,v) in enumerate(d.items()):
         # show only one branch
         # branch is false show everything
@@ -55,7 +55,16 @@ def iterdict(d, G, depth=0, pos=0, parent=0, stop_depth=None, show_sources=True,
         
         # Create Labels for Nodes
         label_lines = k.split("\n")
-        references = label_lines[1:]
+        references_raw = label_lines[1:]
+        references = []
+        
+        # Filter References by year
+        for r in references_raw:
+            ref_year = int(r[r.find("[")+1 : r.find("]")][-11:-7])
+            #print(r, ref_year, year_range, list(range(*year_range)), type(year_range))
+            if ref_year in range(*year_range):
+                #print("ADD", r)
+                references.append(r)
         
         if references and show_sources:
             ref_string = "<br align='left'/>".join(["<br align='left'/>".join(textwrap.wrap(x, subsequent_indent="   ")) for x in references])
@@ -84,7 +93,7 @@ def iterdict(d, G, depth=0, pos=0, parent=0, stop_depth=None, show_sources=True,
             if isinstance(stop_depth, int) and stop_depth == depth:
                 pass # stop recursion
             else:
-                iterdict(v, G, depth=depth+1, pos=i, parent=node_id, stop_depth=stop_depth, show_sources=show_sources, show_selected_branch=show_selected_branch)
+                iterdict(v, G, depth=depth+1, pos=i, parent=node_id, stop_depth=stop_depth, show_sources=show_sources, show_selected_branch=show_selected_branch,year_range=year_range)
     return G        
 
 
@@ -101,12 +110,15 @@ def iterdict(d, G, depth=0, pos=0, parent=0, stop_depth=None, show_sources=True,
 
 
 
-def plot_lr_tree(stop_depth=None,renderer=['dot','circo','sfdp', 'neato', 'twopi'],show_sources=True,show_selected_branch=[]):
+def plot_lr_tree(stop_depth=None,renderer=['dot','circo','sfdp', 'neato', 'twopi'],show_sources=True,show_selected_branch=[], year_range=[2000,2100]):
     """
     Based on: https://github.uconn.edu/gist/jet08013/5d008a08da164d7ee67b6be740390c50
     """
+    # Add one to include end year
+    year_range = (year_range[0], year_range[1] + 1)
+    
     G = nx.DiGraph()
-    G = iterdict(get_review_dict(), G, stop_depth=stop_depth, show_sources=show_sources, show_selected_branch=show_selected_branch)
+    G = iterdict(get_review_dict(), G, stop_depth=stop_depth, show_sources=show_sources, show_selected_branch=show_selected_branch,year_range=year_range)
 
 
     G.graph['graph'] = {'rankdir':'LR','nodesep':0.2, 'ranksep':0.2, 'overlap':'false'}
@@ -125,14 +137,15 @@ def plot_lr_tree(stop_depth=None,renderer=['dot','circo','sfdp', 'neato', 'twopi
 st.title("Umbrella Review of Digital Twin Literature Reviews [Work in Progress]")
 depth = st.sidebar.slider("Depth of Tree",min_value=0,max_value=10,value=6, step=1)
 
-sources = st.sidebar.checkbox("Show Sources")
-st.sidebar.markdown("Sources: BibTeX-Keys + comments")
+sources = st.sidebar.checkbox("Show Sources (BibTeX-Keys + comments)")
+
+year_range = list(st.sidebar.slider('Filter Years (show only publications within this time-span)', 2000, 2022, (2000, 2020)))
 
 options = ['Show All'] + [k for k,v in get_review_dict()['Digital Twin Umbrella Review'].items()]
-branches = st.sidebar.multiselect("Branches to show", options,default=options[1:5])
+branches = st.sidebar.multiselect("Branches to show", options,default=options[1:4])
 
 st.sidebar.markdown("[Sourcecode at Github](https://github.com/MartinEnders/Digital-Twin_Umbrella-Review)")
 
 #st.write(branches)
 
-st.graphviz_chart(plot_lr_tree(depth, 'dot',sources,branches))
+st.graphviz_chart(plot_lr_tree(depth, 'dot',sources,branches,year_range))
